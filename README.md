@@ -12,8 +12,8 @@ content insert --uri content://settings/secure --bind name:s:DEVICE_PROVISIONED 
 content insert --uri content://settings/secure --bind name:s:user_setup_complete --bind value:i:1
 content insert --uri content://settings/secure --bind name:s:INSTALL_NON_MARKET_APPS --bind value:i:1
 am start -c android.intent.category.HOME -a android.intent.action.MAIN
-# Wait 5 sec
+Wait 5 sec
 am start -n com.android.settings/com.android.settings.Settings
-# Wait 5 sec
+Wait 5 sec
 reboot
 
