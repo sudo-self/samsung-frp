@@ -1,6 +1,8 @@
 # Samsung FRP Bypass
+
+- grab python from <a href="https://www.python.org/downloads/">here</a><br>
 - Make sure you have all the dependencies listed in `requirements.txt` installed
-  - Install them using `pip install -r requirements.txt`
+- Install them using `pip install -r requirements.txt`
 - You can simply plug the samsung over USB and run `python main.py`
 
 ## frp.bin
