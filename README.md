@@ -4,10 +4,17 @@
 - Make sure you have all the dependencies listed in `requirements.txt` installed
 - Install them using `pip install -r requirements.txt`
 - You can simply plug the samsung over USB and run `python main.py`
+  
+## unlock.sh
 
-<img width="682" alt="Screenshot 2024-08-28 at 11 55 19 AM" src="https://github.com/user-attachments/assets/56a487d5-e974-4e7c-8e78-e74eccd9aa12">
+```
+git clone https://github.com/sudo-self/samsung-frp.git
+cd samsung-frp
+chmod +x unlock.sh
+./unlock.sh
+```
 
-### unlock.sh
+<img width="682" alt="Screenshot 2024-08-28 at 11 55 19 AM" src="https://github.com/user-attachments/assets/56a487d5-e974-4e7c-8e78-e74eccd9aa12"><hr>
 
 execute_adb_command() {
     adb shell "$1"
