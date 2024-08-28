@@ -5,6 +5,8 @@
 - Install them using `pip install -r requirements.txt`
 - You can simply plug the samsung over USB and run `python main.py`
 
+<img width="682" alt="Screenshot 2024-08-28 at 11 55 19 AM" src="https://github.com/user-attachments/assets/56a487d5-e974-4e7c-8e78-e74eccd9aa12">
+
 ### unlock.sh
 
 execute_adb_command() {
