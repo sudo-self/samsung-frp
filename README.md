@@ -27,15 +27,11 @@ execute_adb_command "content insert --uri content://settings/secure --bind name:
 execute_adb_command "am start -c android.intent.category.HOME -a android.intent.action.MAIN"
 ```
 ### wait for 5 seconds
-sleep 5
 
+```
 execute_adb_command "am start -n com.android.settings/com.android.settings.Settings"
-
-### wait for 5 seconds
-sleep 5
-
-### reboot the device
-execute_adb_command "reboot"
+```
+then reboot..
 
 ### main.py
 
