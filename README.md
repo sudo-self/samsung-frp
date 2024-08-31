@@ -16,14 +16,16 @@ chmod +x unlock.sh
 
 <img width="682" alt="Screenshot 2024-08-28 at 11 55 19 AM" src="https://github.com/user-attachments/assets/56a487d5-e974-4e7c-8e78-e74eccd9aa12"><hr>
 
-### run ADB commands
+### runs ADB commands
+
+```
 execute_adb_command "settings put global setup_wizard_has_run 1"<br>
 execute_adb_command "settings put secure user_setup_complete 1"<br>
 execute_adb_command "content insert --uri content://settings/secure --bind name:s:DEVICE_PROVISIONED --bind value:i:1"<br>
 execute_adb_command "content insert --uri content://settings/secure --bind name:s:user_setup_complete --bind value:i:1"<br>
 execute_adb_command "content insert --uri content://settings/secure --bind name:s:INSTALL_NON_MARKET_APPS --bind value:i:1"<br>
 execute_adb_command "am start -c android.intent.category.HOME -a android.intent.action.MAIN"<br>
-
+```
 ### wait for 5 seconds
 sleep 5
 
