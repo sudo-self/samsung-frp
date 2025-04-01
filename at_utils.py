@@ -7,6 +7,7 @@ import time
 SERIAL_BAUDRATE = 115200
 SERIAL_TIMEOUT = 12
 
+
 def list_serial_ports() -> list_ports_common.ListPortInfo:
     ports = prtlst.comports()
     if len(ports) == 0:
@@ -18,8 +19,10 @@ def list_serial_ports() -> list_ports_common.ListPortInfo:
     print("####### End of available serial ports #######")
     return ports[0]
 
+
 def get_AT_serial(port: str) -> serial.Serial:
     return serial.Serial(port, baudrate=SERIAL_BAUDRATE, timeout=SERIAL_TIMEOUT)
+
 
 def ATSend(io: serial.Serial, cmd: str) -> bool:
     if not io.isOpen():
@@ -38,9 +41,10 @@ def ATSend(io: serial.Serial, cmd: str) -> bool:
         return False
     if ret == cmd.encode():
         return True
-    if ret == b'':
+    if ret == b"":
         return False
     return True
+
 
 def tryATCmds(io: serial.Serial, cmds: List[str]):
     for i, cmd in enumerate(cmds):
@@ -50,15 +54,34 @@ def tryATCmds(io: serial.Serial, cmds: List[str]):
             if not res:
                 print("OK")
         except:
-            print(f"Error while sending command {cmd}")    
+            print(f"Error while sending command {cmd}")
     try:
         io.close()
     except:
         print("Unable to properly close serial connection")
 
+
 def enableADB():
     default_port = list_serial_ports()
-    port = input(f"Choose a serial port (default={default_port.device}) :") or str(default_port.device)
+    print(f"Available serial port: {default_port.device}")
+
+    print(
+        "Since your device was detected by usbswitcher.py, USB debugging might already be enabled."
+    )
+    choice = (
+        input(
+            "Do you want to attempt enabling USB debugging via AT commands? (y/n, default=n): "
+        )
+        or "n"
+    )
+
+    if choice.lower() != "y":
+        print("Skipping AT commands, assuming USB debugging is already enabled")
+        return
+
+    port = input(f"Choose a serial port (default={default_port.device}) :") or str(
+        default_port.device
+    )
     io = get_AT_serial(port)
     print("Initial...")
     # Seems to check if we are in *#0*# mode but apparently not working on the samsung I have
@@ -78,6 +101,7 @@ def enableADB():
 
     print("USB Debugging should be enabled")
     print("If USB Debugging prompt does not appear, try unplug/replug the USB cable")
+
 
 if __name__ == "__main__":
     enableADB()
