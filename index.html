@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Samsung FRP Bypass</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background: #f7f7f7;
+      padding: 20px;
+      color: #222;
+      line-height: 1.6;
+    }
+    h2, h3 {
+      color: #111;
+      margin-top: 30px;
+    }
+    code, pre {
+      background: #eee;
+      padding: 10px;
+      border-radius: 6px;
+      display: block;
+      overflow-x: auto;
+    }
+    img {
+      max-width: 100%;
+      border-radius: 8px;
+      margin: 10px 0;
+    }
+    .section {
+      background: #fff;
+      padding: 20px;
+      border-radius: 10px;
+      margin-bottom: 25px;
+      box-shadow: 0 2px 5px rgba(0,0,0,0.05);
+    }
+    hr {
+      margin: 40px 0;
+      border: 0;
+      border-top: 1px solid #ddd;
+    }
+    a {
+      color: #0073e6;
+    }
+  </style>
+</head>
+<body>
+
+  <div class="section">
+    <h2>Samsung FRP Bypass</h2>
+
+    <ul>
+      <li>Grab Python from <a href="https://www.python.org/downloads/" target="_blank">here</a></li>
+      <li>Make sure you have all dependencies listed in <code>requirements.txt</code></li>
+      <li>Install them using: <code>pip install -r requirements.txt</code></li>
+      <li>Plug your Samsung device over USB and run: <code>python main.py</code></li>
+    </ul>
+  </div>
+
+  <div class="section">
+    <h3>unlock.sh</h3>
+
+    <pre><code>git clone https://github.com/sudo-self/samsung-frp.git
+cd samsung-frp
+chmod +x unlock.sh
+./unlock.sh</code></pre>
+
+    <img src="https://github.com/user-attachments/assets/56a487d5-e974-4e7c-8e78-e74eccd9aa12" alt="unlock screenshot">
+  </div>
+
+  <hr>
+
+  <div class="section">
+    <h3>Runs ADB Commands</h3>
+
+    <pre><code>execute_adb_command "settings put global setup_wizard_has_run 1"
+execute_adb_command "settings put secure user_setup_complete 1"
+execute_adb_command "content insert --uri content://settings/secure --bind name:s:DEVICE_PROVISIONED --bind value:i:1"
+execute_adb_command "content insert --uri content://settings/secure --bind name:s:user_setup_complete --bind value:i:1"
+execute_adb_command "content insert --uri content://settings/secure --bind name:s:INSTALL_NON_MARKET_APPS --bind value:i:1"
+execute_adb_command "am start -c android.intent.category.HOME -a android.intent.action.MAIN"</code></pre>
+
+    <p><strong>Wait 5 seconds…</strong></p>
+
+    <pre><code>execute_adb_command "am start -n com.android.settings/com.android.settings.Settings"</code></pre>
+
+    <p>Then reboot.</p>
+  </div>
+
+  <div class="section">
+    <h3>main.py</h3>
+
+    <img src="https://github.com/sudo-self/samsung-frp/assets/119916323/001dfba7-4941-4d61-828c-da7c0d010f08" alt="main.py screenshot 1">
+    <img src="https://github.com/sudo-self/samsung-frp/assets/119916323/bd0c81ea-1416-4c21-bbea-c8c382589115" alt="main.py screenshot 2">
+  </div>
+
+</body>
+</html>
