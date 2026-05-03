@@ -4,96 +4,709 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Samsung FRP Bypass</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@300;400;500;700&family=Syne:wght@400;600;700;800&display=swap" rel="stylesheet">
   <style>
+    :root {
+      --bg:        #0b0f1a;
+      --bg-deep:   #060a12;
+      --bg-card:   #0d1220;
+      --bg-code:   #080c16;
+      --border:    #1a2d50;
+      --border-hi: #2a4a7a;
+      --cyan:      #00d4ff;
+      --cyan-dim:  #0099bb;
+      --mint:      #00ffaa;
+      --pink:      #ff4488;
+      --text:      #d4e4f7;
+      --text-muted:#5a7aaa;
+      --text-dim:  #3a5070;
+    }
+
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    html { scroll-behavior: smooth; }
+
     body {
-      font-family: Arial, sans-serif;
-      background: #f7f7f7;
-      padding: 20px;
-      color: #222;
+      background-color: var(--bg);
+      color: var(--text);
+      font-family: 'Syne', sans-serif;
+      font-size: 15px;
+      line-height: 1.7;
+      min-height: 100vh;
+      overflow-x: hidden;
+    }
+
+    /* ── Scanline overlay ── */
+    body::before {
+      content: '';
+      position: fixed;
+      inset: 0;
+      background: repeating-linear-gradient(
+        0deg,
+        transparent,
+        transparent 2px,
+        rgba(0,212,255,0.012) 2px,
+        rgba(0,212,255,0.012) 4px
+      );
+      pointer-events: none;
+      z-index: 0;
+    }
+
+    /* ── Corner accent ── */
+    body::after {
+      content: '';
+      position: fixed;
+      top: 0; right: 0;
+      width: 340px; height: 340px;
+      background: radial-gradient(ellipse at top right, rgba(0,212,255,0.07) 0%, transparent 70%);
+      pointer-events: none;
+      z-index: 0;
+    }
+
+    /* ── Header ── */
+    header {
+      position: relative;
+      z-index: 10;
+      background: var(--bg-deep);
+      border-bottom: 1px solid var(--border);
+      padding: 0 48px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      height: 72px;
+    }
+
+    .logo {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 13px;
+      font-weight: 700;
+      letter-spacing: 4px;
+      color: var(--cyan);
+      text-transform: uppercase;
+    }
+
+    .logo span {
+      color: var(--text-dim);
+    }
+
+    .header-badge {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 10px;
+      letter-spacing: 2px;
+      color: var(--text-dim);
+      border: 1px solid var(--border);
+      padding: 4px 12px;
+      border-radius: 2px;
+    }
+
+    /* ── Hero ── */
+    .hero {
+      position: relative;
+      z-index: 1;
+      padding: 80px 48px 64px;
+      max-width: 1100px;
+      margin: 0 auto;
+    }
+
+    .hero-tag {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 10px;
+      letter-spacing: 4px;
+      color: var(--cyan-dim);
+      text-transform: uppercase;
+      margin-bottom: 20px;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .hero-tag::before {
+      content: '';
+      display: block;
+      width: 28px;
+      height: 1px;
+      background: var(--cyan-dim);
+    }
+
+    h1 {
+      font-family: 'Syne', sans-serif;
+      font-size: clamp(36px, 5vw, 58px);
+      font-weight: 800;
+      line-height: 1.1;
+      letter-spacing: -1px;
+      color: #fff;
+      margin-bottom: 20px;
+    }
+
+    h1 .accent {
+      color: var(--cyan);
+    }
+
+    .hero-sub {
+      font-size: 15px;
+      color: var(--text-muted);
+      max-width: 560px;
+      line-height: 1.8;
+      font-family: 'JetBrains Mono', monospace;
+      font-weight: 300;
+    }
+
+    /* ── Main layout ── */
+    .container {
+      position: relative;
+      z-index: 1;
+      max-width: 1100px;
+      margin: 0 auto;
+      padding: 0 48px 100px;
+    }
+
+    /* ── Section headers ── */
+    .section-label {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 10px;
+      letter-spacing: 4px;
+      color: var(--text-dim);
+      text-transform: uppercase;
+      margin-bottom: 24px;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .section-label::after {
+      content: '';
+      flex: 1;
+      height: 1px;
+      background: var(--border);
+    }
+
+    h2 {
+      font-family: 'Syne', sans-serif;
+      font-size: 22px;
+      font-weight: 700;
+      color: #fff;
+      margin-bottom: 8px;
+    }
+
+    h3 {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 13px;
+      font-weight: 700;
+      color: var(--cyan);
+      letter-spacing: 2px;
+      text-transform: uppercase;
+      margin-bottom: 16px;
+    }
+
+    /* ── Cards ── */
+    .card {
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      border-radius: 6px;
+      padding: 32px;
+      margin-bottom: 24px;
+      transition: border-color 0.2s;
+      animation: fadeUp 0.5s ease both;
+    }
+
+    .card:hover {
+      border-color: var(--border-hi);
+    }
+
+    @keyframes fadeUp {
+      from { opacity: 0; transform: translateY(16px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+
+    .card:nth-child(1) { animation-delay: 0.05s; }
+    .card:nth-child(2) { animation-delay: 0.10s; }
+    .card:nth-child(3) { animation-delay: 0.15s; }
+    .card:nth-child(4) { animation-delay: 0.20s; }
+
+    /* ── Two-column grid ── */
+    .grid-2 {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 24px;
+      margin-bottom: 24px;
+    }
+
+    @media (max-width: 720px) {
+      .grid-2 { grid-template-columns: 1fr; }
+      header, .hero, .container { padding-left: 20px; padding-right: 20px; }
+      .hero { padding-top: 48px; padding-bottom: 40px; }
+    }
+
+    /* ── Step list ── */
+    .steps {
+      list-style: none;
+      display: flex;
+      flex-direction: column;
+      gap: 14px;
+      margin-top: 8px;
+    }
+
+    .steps li {
+      display: flex;
+      align-items: flex-start;
+      gap: 14px;
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 13px;
+      color: var(--text);
       line-height: 1.6;
     }
-    h2, h3 {
-      color: #111;
-      margin-top: 30px;
+
+    .step-num {
+      flex-shrink: 0;
+      width: 22px;
+      height: 22px;
+      border: 1px solid var(--cyan-dim);
+      border-radius: 2px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 10px;
+      color: var(--cyan);
+      font-weight: 700;
+      margin-top: 2px;
     }
-    code, pre {
-      background: #eee;
-      padding: 10px;
-      border-radius: 6px;
-      display: block;
+
+    .steps a {
+      color: var(--cyan);
+      text-decoration: none;
+      border-bottom: 1px solid rgba(0,212,255,0.3);
+      transition: border-color 0.15s;
+    }
+    .steps a:hover { border-color: var(--cyan); }
+
+    /* ── Inline code ── */
+    code {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 12px;
+      background: rgba(0,212,255,0.07);
+      border: 1px solid rgba(0,212,255,0.15);
+      color: var(--cyan);
+      padding: 2px 7px;
+      border-radius: 3px;
+    }
+
+    /* ── Code blocks ── */
+    pre {
+      background: var(--bg-code);
+      border: 1px solid var(--border);
+      border-radius: 4px;
+      padding: 20px 24px;
       overflow-x: auto;
+      margin: 16px 0;
+      position: relative;
     }
-    img {
-      max-width: 100%;
-      border-radius: 8px;
-      margin: 10px 0;
+
+    pre::before {
+      content: attr(data-label);
+      position: absolute;
+      top: 0; right: 0;
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 9px;
+      letter-spacing: 2px;
+      color: var(--text-dim);
+      padding: 6px 12px;
+      border-left: 1px solid var(--border);
+      border-bottom: 1px solid var(--border);
+      border-radius: 0 4px 0 4px;
+      text-transform: uppercase;
     }
-    .section {
-      background: #fff;
-      padding: 20px;
-      border-radius: 10px;
-      margin-bottom: 25px;
-      box-shadow: 0 2px 5px rgba(0,0,0,0.05);
+
+    pre code {
+      background: none;
+      border: none;
+      padding: 0;
+      font-size: 12.5px;
+      color: #a8d8ff;
+      line-height: 1.8;
     }
-    hr {
-      margin: 40px 0;
-      border: 0;
-      border-top: 1px solid #ddd;
+
+    .cmd-comment { color: var(--text-dim); }
+    .cmd-key     { color: var(--cyan); }
+    .cmd-val     { color: var(--mint); }
+    .cmd-flag    { color: #ffcc66; }
+
+    /* ── Copy button ── */
+    .code-wrap { position: relative; }
+
+    .copy-btn {
+      position: absolute;
+      top: 8px; right: 8px;
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 9px;
+      letter-spacing: 1px;
+      color: var(--text-dim);
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      border-radius: 3px;
+      padding: 4px 10px;
+      cursor: pointer;
+      text-transform: uppercase;
+      transition: color 0.15s, border-color 0.15s;
     }
-    a {
-      color: #0073e6;
+    .copy-btn:hover { color: var(--cyan); border-color: var(--cyan-dim); }
+    .copy-btn.copied { color: var(--mint); border-color: var(--mint); }
+
+    /* ── Images ── */
+    .screenshot-row {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 16px;
+      margin-top: 20px;
     }
+
+    .screenshot-row img {
+      width: 100%;
+      border-radius: 4px;
+      border: 1px solid var(--border);
+      display: block;
+    }
+
+    /* ── ADB command table ── */
+    .adb-list {
+      display: flex;
+      flex-direction: column;
+      gap: 0;
+      border: 1px solid var(--border);
+      border-radius: 4px;
+      overflow: hidden;
+      margin-top: 16px;
+    }
+
+    .adb-row {
+      display: grid;
+      grid-template-columns: 180px 1fr;
+      border-bottom: 1px solid var(--border);
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 11.5px;
+      transition: background 0.15s;
+    }
+
+    .adb-row:last-child { border-bottom: none; }
+    .adb-row:hover { background: rgba(0,212,255,0.03); }
+
+    .adb-label {
+      padding: 12px 16px;
+      color: var(--text-muted);
+      border-right: 1px solid var(--border);
+      background: rgba(0,0,0,0.2);
+      font-size: 10px;
+      letter-spacing: 1px;
+      display: flex;
+      align-items: center;
+    }
+
+    .adb-cmd {
+      padding: 12px 16px;
+      color: #a8d8ff;
+      word-break: break-all;
+    }
+
+    .adb-cmd .hl { color: var(--cyan); }
+    .adb-cmd .val { color: var(--mint); }
+
+    /* ── Divider ── */
+    .divider {
+      border: none;
+      border-top: 1px solid var(--border);
+      margin: 48px 0;
+    }
+
+    /* ── Download strip ── */
+    .download-strip {
+      background: linear-gradient(135deg, #00131a 0%, #001a10 100%);
+      border: 1px solid var(--cyan-dim);
+      border-radius: 6px;
+      padding: 28px 32px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 24px;
+      margin-bottom: 24px;
+      flex-wrap: wrap;
+    }
+
+    .download-info h3 {
+      color: #fff;
+      margin-bottom: 4px;
+      font-size: 14px;
+    }
+
+    .download-info p {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 11px;
+      color: var(--text-muted);
+    }
+
+    .dl-btns {
+      display: flex;
+      gap: 10px;
+      flex-wrap: wrap;
+    }
+
+    .btn {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 11px;
+      font-weight: 700;
+      letter-spacing: 2px;
+      text-transform: uppercase;
+      text-decoration: none;
+      padding: 10px 20px;
+      border-radius: 3px;
+      border: 1px solid;
+      cursor: pointer;
+      transition: background 0.15s, color 0.15s;
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .btn-cyan {
+      color: var(--cyan);
+      border-color: var(--cyan);
+      background: rgba(0,212,255,0.06);
+    }
+    .btn-cyan:hover { background: rgba(0,212,255,0.14); }
+
+    .btn-ghost {
+      color: var(--text-muted);
+      border-color: var(--border-hi);
+      background: transparent;
+    }
+    .btn-ghost:hover { color: var(--text); border-color: var(--text-muted); }
+
+    /* ── Footer ── */
+    footer {
+      position: relative;
+      z-index: 1;
+      background: var(--bg-deep);
+      border-top: 1px solid var(--border);
+      padding: 24px 48px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 10px;
+      letter-spacing: 2px;
+      color: var(--text-dim);
+      flex-wrap: wrap;
+      gap: 12px;
+    }
+
+    footer a { color: var(--text-dim); text-decoration: none; }
+    footer a:hover { color: var(--cyan); }
   </style>
 </head>
 <body>
 
-  <div class="section">
-    <h2>Samsung FRP Bypass</h2>
+  <!-- Header -->
+  <header>
+    <div class="logo">SAMSUNG<span>/</span>FRP<span>-</span>TOOL</div>
+    <div class="header-badge">v1.0.0 · ADB · SERIAL · GSM</div>
+  </header>
 
-    <ul>
-      <li>Grab Python from <a href="https://www.python.org/downloads/" target="_blank">here</a></li>
-      <li>Make sure you have all dependencies listed in <code>requirements.txt</code></li>
-      <li>Install them using: <code>pip install -r requirements.txt</code></li>
-      <li>Plug your Samsung device over USB and run: <code>python main.py</code></li>
-    </ul>
+  <!-- Hero -->
+  <div class="hero">
+    <div class="hero-tag">Factory Reset Protection Bypass</div>
+    <h1>Unlock<br><span class="accent">Samsung</span> Devices</h1>
+    <p class="hero-sub">
+      Two interfaces — a PyQt5 GUI and a shell script — for bypassing FRP
+      on Samsung Galaxy devices via ADB and AT serial commands.
+    </p>
   </div>
 
-  <div class="section">
-    <h3>unlock.sh</h3>
+  <!-- Content -->
+  <div class="container">
 
-    <pre><code>git clone https://github.com/sudo-self/samsung-frp.git
-cd samsung-frp
-chmod +x unlock.sh
-./unlock.sh</code></pre>
+    <!-- Quick start + shell script strip -->
+    <div class="section-label">Getting started</div>
 
-    <img src="https://github.com/user-attachments/assets/56a487d5-e974-4e7c-8e78-e74eccd9aa12" alt="unlock screenshot">
+    <div class="grid-2">
+
+      <!-- PyQt GUI -->
+      <div class="card">
+        <h3>PyQt5 GUI</h3>
+        <ul class="steps">
+          <li>
+            <span class="step-num">1</span>
+            <span>Install <a href="https://www.python.org/downloads/" target="_blank">Python 3.10+</a></span>
+          </li>
+          <li>
+            <span class="step-num">2</span>
+            <span>Install dependencies:<br><code>pip install -r requirements.txt</code></span>
+          </li>
+          <li>
+            <span class="step-num">3</span>
+            <span>Connect your Samsung device over USB</span>
+          </li>
+          <li>
+            <span class="step-num">4</span>
+            <span>Launch the tool:<br><code>python main.py</code></span>
+          </li>
+        </ul>
+      </div>
+
+      <!-- Shell script -->
+      <div class="card">
+        <h3>unlock.sh</h3>
+        <ul class="steps">
+          <li>
+            <span class="step-num">1</span>
+            <span>Clone the repo and enter the directory</span>
+          </li>
+          <li>
+            <span class="step-num">2</span>
+            <span>Make the script executable:<br><code>chmod +x unlock.sh</code></span>
+          </li>
+          <li>
+            <span class="step-num">3</span>
+            <span>Connect device, then run:<br><code>./unlock.sh</code></span>
+          </li>
+          <li>
+            <span class="step-num">4</span>
+            <span>Follow on-screen prompts to complete factory reset</span>
+          </li>
+        </ul>
+      </div>
+
+    </div>
+
+    <!-- Clone block -->
+    <div class="code-wrap">
+      <button class="copy-btn" onclick="copyCode(this, 'clone-block')">Copy</button>
+      <pre data-label="bash" id="clone-block"><code><span class="cmd-comment"># Clone and run</span>
+<span class="cmd-key">git</span> clone https://github.com/sudo-self/samsung-frp.git
+<span class="cmd-key">cd</span> samsung-frp
+<span class="cmd-key">chmod</span> <span class="cmd-flag">+x</span> unlock.sh
+<span class="cmd-key">./</span>unlock.sh</code></pre>
+    </div>
+
+    <!-- Screenshot of unlock.sh -->
+    <div class="card" style="padding: 20px;">
+      <img src="https://github.com/user-attachments/assets/56a487d5-e974-4e7c-8e78-e74eccd9aa12"
+           alt="unlock.sh terminal output"
+           style="width:100%; border-radius:4px; border:1px solid var(--border); display:block;">
+    </div>
+
+    <hr class="divider">
+
+    <!-- ADB Commands -->
+    <div class="section-label">ADB command sequence</div>
+
+    <div class="card">
+      <h2>What the bypass does</h2>
+      <p style="font-family:'JetBrains Mono',monospace; font-size:12px; color:var(--text-muted); margin: 12px 0 20px;">
+        Writes directly to Android's settings database to mark the device as fully provisioned,
+        bypassing the setup wizard. Then opens Settings for a factory reset to clear FRP entirely.
+      </p>
+
+      <div class="adb-list">
+        <div class="adb-row">
+          <div class="adb-label">Setup Wizard</div>
+          <div class="adb-cmd">settings put global <span class="hl">setup_wizard_has_run</span> <span class="val">1</span></div>
+        </div>
+        <div class="adb-row">
+          <div class="adb-label">User Setup</div>
+          <div class="adb-cmd">settings put secure <span class="hl">user_setup_complete</span> <span class="val">1</span></div>
+        </div>
+        <div class="adb-row">
+          <div class="adb-label">Provisioned</div>
+          <div class="adb-cmd">content insert … <span class="hl">DEVICE_PROVISIONED</span> <span class="val">1</span></div>
+        </div>
+        <div class="adb-row">
+          <div class="adb-label">Setup Complete</div>
+          <div class="adb-cmd">content insert … <span class="hl">user_setup_complete</span> <span class="val">1</span></div>
+        </div>
+        <div class="adb-row">
+          <div class="adb-label">Sideloading</div>
+          <div class="adb-cmd">content insert … <span class="hl">INSTALL_NON_MARKET_APPS</span> <span class="val">1</span></div>
+        </div>
+        <div class="adb-row">
+          <div class="adb-label">Home Screen</div>
+          <div class="adb-cmd">am start <span class="hl">-c android.intent.category.HOME</span></div>
+        </div>
+        <div class="adb-row">
+          <div class="adb-label">Wait 5s →</div>
+          <div class="adb-cmd">am start -n <span class="hl">com.android.settings</span>/<span class="val">com.android.settings.Settings</span></div>
+        </div>
+        <div class="adb-row">
+          <div class="adb-label">Wait 5s → Reboot</div>
+          <div class="adb-cmd"><span class="hl">adb shell reboot</span></div>
+        </div>
+      </div>
+    </div>
+
+    <hr class="divider">
+
+    <!-- GUI Screenshots -->
+    <div class="section-label">GUI — main.py</div>
+
+    <div class="card">
+      <h2>PyQt5 Interface</h2>
+      <p style="font-family:'JetBrains Mono',monospace; font-size:12px; color:var(--text-muted); margin-bottom:4px;">
+        Four tabs — USB switcher, ADB/AT commands, FRP bypass, GSM SMS — all running in background threads.
+      </p>
+      <div class="screenshot-row">
+        <img src="https://github.com/sudo-self/samsung-frp/assets/119916323/001dfba7-4941-4d61-828c-da7c0d010f08"
+             alt="main.py GUI screenshot 1">
+        <img src="https://github.com/sudo-self/samsung-frp/assets/119916323/bd0c81ea-1416-4c21-bbea-c8c382589115"
+             alt="main.py GUI screenshot 2">
+      </div>
+    </div>
+
+    <hr class="divider">
+
+    <!-- Download strip -->
+    <div class="section-label">Downloads</div>
+
+    <div class="download-strip">
+      <div class="download-info">
+        <h3>samsung_frp_tool.py</h3>
+        <p>PyQt5 GUI · USB · ADB · AT Commands · GSM SMS</p>
+      </div>
+      <div class="dl-btns">
+        <a href="samsung_frp_tool.py" download class="btn btn-cyan">⬇ main.py</a>
+        <a href="unlock.sh" download class="btn btn-ghost">⬇ unlock.sh</a>
+      </div>
+    </div>
+
+    <!-- Requirements block -->
+    <div class="code-wrap">
+      <button class="copy-btn" onclick="copyCode(this, 'req-block')">Copy</button>
+      <pre data-label="requirements.txt" id="req-block"><code>PyQt5
+pyserial
+pyusb</code></pre>
+    </div>
+
   </div>
 
-  <hr>
+  <!-- Footer -->
+  <footer>
+    <span>SAMSUNG FRP TOOL · ADB / AT / GSM</span>
+    <span>
+      <a href="https://github.com/sudo-self/samsung-frp" target="_blank">github.com/sudo-self/samsung-frp</a>
+    </span>
+  </footer>
 
-  <div class="section">
-    <h3>Runs ADB Commands</h3>
-
-    <pre><code>execute_adb_command "settings put global setup_wizard_has_run 1"
-execute_adb_command "settings put secure user_setup_complete 1"
-execute_adb_command "content insert --uri content://settings/secure --bind name:s:DEVICE_PROVISIONED --bind value:i:1"
-execute_adb_command "content insert --uri content://settings/secure --bind name:s:user_setup_complete --bind value:i:1"
-execute_adb_command "content insert --uri content://settings/secure --bind name:s:INSTALL_NON_MARKET_APPS --bind value:i:1"
-execute_adb_command "am start -c android.intent.category.HOME -a android.intent.action.MAIN"</code></pre>
-
-    <p><strong>Wait 5 seconds…</strong></p>
-
-    <pre><code>execute_adb_command "am start -n com.android.settings/com.android.settings.Settings"</code></pre>
-
-    <p>Then reboot.</p>
-  </div>
-
-  <div class="section">
-    <h3>main.py</h3>
-
-    <img src="https://github.com/sudo-self/samsung-frp/assets/119916323/001dfba7-4941-4d61-828c-da7c0d010f08" alt="main.py screenshot 1">
-    <img src="https://github.com/sudo-self/samsung-frp/assets/119916323/bd0c81ea-1416-4c21-bbea-c8c382589115" alt="main.py screenshot 2">
-  </div>
+  <script>
+    function copyCode(btn, id) {
+      const el = document.getElementById(id);
+      const text = el.innerText;
+      navigator.clipboard.writeText(text).then(() => {
+        btn.textContent = 'Copied';
+        btn.classList.add('copied');
+        setTimeout(() => {
+          btn.textContent = 'Copy';
+          btn.classList.remove('copied');
+        }, 1800);
+      });
+    }
+  </script>
 
 </body>
 </html>
