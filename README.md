@@ -84,7 +84,6 @@ Output: `dist/SamsungFRPTool.app`
 
 ---
 
-## Screenshots
 
 
 
