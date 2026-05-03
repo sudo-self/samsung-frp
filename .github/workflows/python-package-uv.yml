@@ -1,18 +1,20 @@
-name: Python Package using UV
+name: Build Samsung FRP Tool
 
-on: [push]
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
 
 jobs:
   build-macos:
     runs-on: macos-latest
-    strategy:
-      max-parallel: 5
 
     steps:
       - uses: actions/checkout@v4
 
       - name: Set up Python
-        uses: actions/setup-python@v4
+        uses: actions/setup-python@v5
         with:
           python-version: "3.10"
 
@@ -21,17 +23,47 @@ jobs:
           pip install uv
           echo "UV version: $(uv --version)"
 
+      - name: Create virtual environment
+        run: uv venv
+
       - name: Install dependencies
         run: |
           uv pip install -r requirements.txt
+          uv pip install pyinstaller flake8
+
+      - name: Install libusb
+        run: brew install libusb
 
       - name: Lint with flake8
         run: |
-          uv pip install flake8
-          uv pip run flake8 . --count --select=E9,F63,F7,F82 --show-source --statistics
-          uv pip run flake8 . --count --exit-zero --max-complexity=10 --max-line-length=127 --statistics
+          uv run flake8 . --count --select=E9,F63,F7,F82 --show-source --statistics
+          uv run flake8 . --count --exit-zero --max-complexity=10 --max-line-length=127 --statistics
 
-      - name: Test with pytest
+      - name: Build .app with PyInstaller
         run: |
-          uv pip install pytest
-          uv pip run pytest
+          uv run pyinstaller --onedir --windowed --name "SamsungFRPTool" \
+            --hidden-import usb.backend.libusb1 \
+            --hidden-import usb.backend.libusb0 \
+            --hidden-import serial.tools.list_ports \
+            --add-binary "$(brew --prefix libusb)/lib/libusb-1.0.dylib:." \
+            --strip \
+            --exclude-module matplotlib \
+            --exclude-module numpy \
+            --exclude-module pandas \
+            --exclude-module PIL \
+            --exclude-module tkinter \
+            --exclude-module unittest \
+            --noconfirm \
+            frp.py
+
+      - name: Zip the .app bundle
+        run: |
+          cd dist
+          zip -r SamsungFRPTool-macos.zip SamsungFRPTool.app
+
+      - name: Upload artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: SamsungFRPTool-macos
+          path: dist/SamsungFRPTool-macos.zip
+          retention-days: 7
