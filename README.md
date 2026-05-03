@@ -1,5 +1,7 @@
 # Samsung FRP Bypass
 
+[![Build Samsung FRP Tool](https://github.com/sudo-self/samsung-frp/actions/workflows/python-package-uv.yml/badge.svg)](https://github.com/sudo-self/samsung-frp/actions/workflows/python-package-uv.yml)
+
 Bypass Factory Reset Protection on Samsung Galaxy devices via ADB and AT serial commands. Includes a PyQt5 GUI and a shell script.
 
 ## Requirements
